@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "@types/styled-components": "^5.1.26",
     "babel-plugin-react-native-web": "^0.18.12",
     "webpack": "^5.75.0"
   }
