@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import "./App.css";
+import { useState } from "react";
 import styled from "styled-components";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
-//@ts-ignore
-import { Text } from "react-native-web";
+// components
 import { molecules } from "./components";
 
 function App() {
