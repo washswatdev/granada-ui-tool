@@ -1,3 +1,3 @@
-import Molecules from "./molecules";
+import { molecules } from "./molecules";
 
-export { Molecules };
+export { molecules };
