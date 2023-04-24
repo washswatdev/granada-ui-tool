@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import styled from "styled-components";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 //@ts-ignore
 import { Text } from "react-native-web";
@@ -59,7 +59,25 @@ function App() {
                   >
                     <Title>{columnId}</Title>
                     {column.map((item, index) => (
-                      <item.content key={item} item={item} index={index} />
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <item.content
+                              key={item}
+                              item={item}
+                              index={index}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
                     ))}
                     {provided.placeholder}
                   </TaskList>

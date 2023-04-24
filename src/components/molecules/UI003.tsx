@@ -1,25 +1,10 @@
-import React from "react";
-import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
-type Props = {
-  index: number;
-  item: any;
-};
-const UI003: React.FC<Props> = ({ index, item }) => {
+
+const UI003 = () => {
   return (
-    <Draggable key={item.id} draggableId={item.id} index={index}>
-      {(provided) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          <Wrapper>
-            <Text>UI003</Text>
-          </Wrapper>
-        </div>
-      )}
-    </Draggable>
+    <Wrapper>
+      <Text>UI003</Text>
+    </Wrapper>
   );
 };
 
