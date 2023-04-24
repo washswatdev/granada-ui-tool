@@ -24,9 +24,9 @@ const Wrapper = styled.View`
 `;
 
 const Title = styled.Text`
-  font-size: 26px;
+  font-size: 22px;
 `;
 
 const Text = styled.Text`
-  font-size: 18px;
+  font-size: 15px;
 `;

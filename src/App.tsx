@@ -5,85 +5,95 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 // components
 import { molecules } from "./components";
 
+type MoleculeProps = { id: string; content: () => JSX.Element };
+
 function App() {
-  const [columns, setColumns] = useState<{
-    items: { id: string; content: any }[];
-    selected: { id: string; content: any }[];
-  }>({
-    items: molecules,
-    selected: [],
-  });
+  const [selectedMolecules, setSelectedMolecules] = useState<MoleculeProps[]>(
+    []
+  );
 
-  const onDragEnd = (result: any, columns: any, setColumns: any) => {
+  const onDragEnd = (result: any) => {
     if (!result.destination) return;
-
     const { source, destination } = result;
+
     if (source.droppableId !== destination.droppableId) {
-      const sourceColumn = columns[source.droppableId];
-      const destColumn = columns[destination.droppableId];
-      const sourceItems = [...sourceColumn];
-      const destItems = [...destColumn];
-      const [removed] = sourceItems.splice(source.index, 1);
-      destItems.splice(destination.index, 0, removed);
-      setColumns({
-        [source.droppableId]: sourceItems,
-        [destination.droppableId]: destItems,
+      const updatedSelectedMolecules = [...selectedMolecules];
+      const selectedItem = molecules[source.index];
+      updatedSelectedMolecules.splice(destination.index, 0, {
+        ...selectedItem,
+        id: selectedItem.id + new Date().getTime(),
       });
+      setSelectedMolecules(updatedSelectedMolecules);
     } else {
-      const column = columns[source.droppableId];
-      const copiedItems = [...column];
-      const [removed] = copiedItems.splice(source.index, 1);
-      copiedItems.splice(destination.index, 0, removed);
-      setColumns({
-        ...columns,
-        [destination.droppableId]: copiedItems,
-      });
+      const copiedSelectedMolecules = [...selectedMolecules];
+      const [removed] = copiedSelectedMolecules.splice(source.index, 1);
+      copiedSelectedMolecules.splice(destination.index, 0, removed);
+      setSelectedMolecules(copiedSelectedMolecules);
     }
   };
 
   return (
-    <DragDropContext
-      onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
-    >
+    <DragDropContext onDragEnd={onDragEnd}>
       <Container>
-        <TaskColumnStyles>
-          {Object.entries(columns).map(([columnId, column], index) => {
-            return (
-              <Droppable key={columnId} droppableId={columnId}>
-                {(provided, snapshot) => (
-                  <TaskList
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
-                    <Title>{columnId}</Title>
-                    {column.map((item, index) => (
-                      <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
+        <ColumnWrapper>
+          <Droppable droppableId={"MOLECULES"} isDropDisabled={true}>
+            {(provided, snapshot) => (
+              <MoleculesWrapper
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                <Title>Molecules</Title>
+                {molecules.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={{
+                          marginBottom: 20,
+                          ...provided.draggableProps.style,
+                        }}
                       >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <item.content
-                              key={item}
-                              item={item}
-                              index={index}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </TaskList>
-                )}
-              </Droppable>
-            );
-          })}
-        </TaskColumnStyles>
+                        <item.content />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </MoleculesWrapper>
+            )}
+          </Droppable>
+        </ColumnWrapper>
+        <ColumnWrapper>
+          <Droppable
+            key={"selectedMolecules"}
+            droppableId={"selectedMolecules"}
+          >
+            {(provided, snapshot) => (
+              <MoleculesWrapper
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                <Title>Screen</Title>
+                {selectedMolecules.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <item.content />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </MoleculesWrapper>
+            )}
+          </Droppable>
+        </ColumnWrapper>
       </Container>
     </DragDropContext>
   );
@@ -91,39 +101,30 @@ function App() {
 
 export default App;
 
-const Wrapper = styled.div`
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  flex: 1;
-  background-color: #fff;
-`;
-
 const Container = styled.div`
-  height: 100vh;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex: 1;
-  padding: 25px;
-  border: 1px solid #ababab;
+  height: 100vh;
 `;
 
-const TaskList = styled.div`
+const ColumnWrapper = styled.div`
+  margin: 8px;
+  display: flex;
+  width: 375px;
+  min-height: 80vh;
+  overflow: scroll;
+`;
+
+const MoleculesWrapper = styled.div`
   min-height: 100px;
   display: flex;
   flex-direction: column;
   background: #f3f3f3;
   min-width: 341px;
   border-radius: 5px;
-  padding: 15px 15px;
+  padding: 15px;
   margin-right: 45px;
-`;
-
-const TaskColumnStyles = styled.div`
-  margin: 8px;
-  display: flex;
-  width: 100%;
-  min-height: 80vh;
 `;
 
 const Title = styled.span`
@@ -131,5 +132,6 @@ const Title = styled.span`
   background: rgba(16, 149, 125, 0.15);
   padding: 2px 10px;
   border-radius: 5px;
-  align-self: flex-start;
+  align-self: center;
+  margin-bottom: 30px;
 `;
