@@ -1,13 +1,15 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import JsonFormatter from "react-json-formatter";
 
 // components
 import { molecules } from "./components";
 
-type MoleculeProps = { id: string; content: () => JSX.Element };
+type MoleculeProps = { id: string; content: () => JSX.Element; json: any };
 
 function App() {
+  const [elements, setElements] = useState<any>();
   const [selectedMolecules, setSelectedMolecules] = useState<MoleculeProps[]>(
     []
   );
@@ -24,11 +26,15 @@ function App() {
         id: selectedItem.id + new Date().getTime(),
       });
       setSelectedMolecules(updatedSelectedMolecules);
+      const updatedElements = updatedSelectedMolecules.map((el) => el.json);
+      setElements(updatedElements);
     } else {
       const copiedSelectedMolecules = [...selectedMolecules];
       const [removed] = copiedSelectedMolecules.splice(source.index, 1);
       copiedSelectedMolecules.splice(destination.index, 0, removed);
       setSelectedMolecules(copiedSelectedMolecules);
+      const updatedElements: any = copiedSelectedMolecules.map((el) => el.json);
+      setElements(updatedElements);
     }
   };
 
@@ -93,6 +99,23 @@ function App() {
               </MoleculesWrapper>
             )}
           </Droppable>
+        </ColumnWrapper>
+        <ColumnWrapper style={{ width: 700 }}>
+          <MoleculesWrapper style={{ width: 700 }}>
+            <Title>JSON</Title>
+
+            {!!elements && (
+              <JsonFormatter
+                json={JSON.stringify(elements)}
+                tabWith={4}
+                jsonStyle={{
+                  propertyStyle: { color: "black" },
+                  stringStyle: { color: "green" },
+                  numberStyle: { color: "red" },
+                }}
+              />
+            )}
+          </MoleculesWrapper>
         </ColumnWrapper>
       </Container>
     </DragDropContext>
