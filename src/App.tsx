@@ -49,24 +49,42 @@ function App() {
                 {...provided.droppableProps}
               >
                 <Title>Molecules</Title>
-                {molecules.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        style={{
-                          marginBottom: 20,
-                          ...provided.draggableProps.style,
-                        }}
-                      >
-                        <item.content />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
+                {molecules.map((item, index) => {
+                  return (
+                    <Draggable
+                      key={item.id}
+                      draggableId={item.id}
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <>
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{
+                              marginBottom: 20,
+                              ...provided.draggableProps.style,
+                            }}
+                          >
+                            <item.content />
+                          </div>
+                          {snapshot.isDragging && (
+                            <div
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={{
+                                marginBottom: 20,
+                              }}
+                            >
+                              <item.content />
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </Draggable>
+                  );
+                })}
               </MoleculesWrapper>
             )}
           </Droppable>
